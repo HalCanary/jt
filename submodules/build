@@ -1,0 +1,21 @@
+#! /bin/sh
+set -e
+set -x
+
+autogen_configure_make_install() { (
+    cd "$1"
+    shift
+    git clean -fxd
+    ./autogen.sh
+    ./configure "$@"
+    make -j install
+    git clean -fxd
+); }
+
+cd "$(dirname "$0")/.."
+
+P="$PWD/local"
+
+autogen_configure_make_install submodules/libzmq --prefix="$P"
+
+autogen_configure_make_install submodules/jzmq/jzmq-jni --prefix="$P" --with-zeromq="$P"
